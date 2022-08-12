@@ -14,9 +14,14 @@ Page({
     }
   },
   onLoad: function() {
-
+    
   },
-  startrecognized: function() {
+  startRegist: function() {
+    wx.navigateTo({
+      url: '../regist/index'
+    })
+  },
+  startFace: function() {
     wx.navigateTo({
       url: '../camera/camera?maskType=' + this.data.inputValue
     })

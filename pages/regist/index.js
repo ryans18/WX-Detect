@@ -1,30 +1,6 @@
-var o = function(o) {
-    return o && o.__esModule ? o : {
-      default: o
-    };
-  }(require("../../utils/weCropper.js")),
-  e = wx.getSystemInfoSync(),
-  t = e.windowWidth,
-  r = e.windowHeight - 50;
 var app = getApp();
 Page({
   data: {
-    cameraHidden: false,
-    cropHidden: true,
-    maskType: "IDCardFront",
-    cropperOpt: {
-      id: "cropper",
-      width: t,
-      height: r,
-      scale: 2.5,
-      zoom: 8,
-      cut: {
-        x: (t - 342.4) / 2,
-        y: (r - 216) / 2,
-        width: 342.4,
-        height: 216
-      }
-    }
   },
   touchStart: function(o) {
     this.wecropper.touchStart(o);
@@ -41,67 +17,7 @@ Page({
       that.getDetectData(o);
     });
   },
-  getDetectData: function(path) {
-    wx.showLoading({
-      title: '识别中...',
-    })
-    console.log(this.token)
-    var that = this;
-    var urlStr = "";
-    var param = {};
-    switch (that.maskType) {
-      case "IDCardFront":
-      default:
-        urlStr = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
-        param.id_card_side = "front";
-        param.detect_direction = true;
-        break;
-      case "IDCardBack":
-        urlStr = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
-        param.id_card_side = "back";
-        param.detect_direction = true;
-        break;
-      case "BankCard":
-        urlStr = "https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard";
-        break;
-      case "LicensePlate":
-        urlStr = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
-        break;
-    }
-    wx.getFileSystemManager().readFile({
-      filePath: path,
-      encoding: 'base64',
-      success: res => {
-        param.image = res.data;
-        wx.request({
-          url: urlStr + "?access_token=" + that.token,
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          method: "POST",
-          data: param,
-          success: function(res) {
-            console.log(JSON.stringify(res))
-            wx.hideLoading()
-          },
-          fail: function(res) {
-            console.log(JSON.stringify(res))
-            wx.hideLoading()
-          },
-          complete:function(res){
-            var pages = getCurrentPages();
-            var prepage = pages[pages.length-2];
-            prepage.setData({
-              recognizeResult:res
-            });
-            wx.navigateBack({})
-          }
-        })
-      }
-    })
-  },
   onLoad: function(e) {
-    console.log('url:' + app.json);
     var that = this;
     if (e.maskType && e.maskType != undefined && e.maskType !== "") {
       this.maskType = e.maskType;
@@ -146,7 +62,7 @@ Page({
             param.img = res.data;
             console.log('readFile success: ' + param);
             wx.request({
-              url: app.globalData.host +'/face',
+              url: app.globalData.host + '/regist',
               header: {
                 'Content-Type': 'application/x-www-form-urlencoded'
               },
@@ -159,14 +75,11 @@ Page({
                 if (success) {
                   wx.hideLoading()
                   wx.showToast({
-                    title: '识别成功',
+                    title: '注册人脸成功',
                     icon: 'success',
                     duration: 2000
                   })
                 } else if (face == 0) {
-                  wx.showLoading({
-                    title: '未检测到人脸',
-                  })
                   wx.showToast({
                     title: '未检测到人脸',
                     icon: 'error',
@@ -174,7 +87,7 @@ Page({
                   })
                 } else {
                   wx.showToast({
-                    title: '识别错误',
+                    title: '注册人脸失败',
                     icon: 'error',
                     duration: 2000
                   })

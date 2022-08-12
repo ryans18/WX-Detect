@@ -4,7 +4,8 @@ App({
   },
   globalData: {
     userInfo: null,
-    imgs: '../../img/defaultImg.png'
+    imgs: '../../img/defaultImg.png',
+    host: 'http://192.168.3.58:5000'
   },
   baiduKeys: {
     APIKey: "LA3TurS83jEVl9EqGoHMSp0i",
